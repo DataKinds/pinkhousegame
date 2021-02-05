@@ -1,0 +1,69 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 502d77e42374f31d89bdc5dd442920cffc79f5fa86787a3d4fa83cf37967acc2
+
+name:           pinkhousegame
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/pinkhousegame#readme>
+homepage:       https://github.com/githubuser/pinkhousegame#readme
+bug-reports:    https://github.com/githubuser/pinkhousegame/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2021 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/pinkhousegame
+
+library
+  exposed-modules:
+      Game
+      Lib
+  other-modules:
+      Paths_pinkhousegame
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , brick
+    , lens
+  default-language: Haskell2010
+
+executable pinkhousegame-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_pinkhousegame
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , brick
+    , lens
+    , pinkhousegame
+  default-language: Haskell2010
+
+test-suite pinkhousegame-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_pinkhousegame
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , brick
+    , lens
+    , pinkhousegame
+  default-language: Haskell2010
