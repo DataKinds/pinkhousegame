@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 502d77e42374f31d89bdc5dd442920cffc79f5fa86787a3d4fa83cf37967acc2
+-- hash: 8b124e6121b009e0163119451daed69f040331974a1208bda5b512254b464294
 
 name:           pinkhousegame
 version:        0.1.0.0
@@ -36,7 +36,10 @@ library
   build-depends:
       base >=4.7 && <5
     , brick
+    , containers
     , lens
+    , linear
+    , vty
   default-language: Haskell2010
 
 executable pinkhousegame-exe
@@ -49,8 +52,11 @@ executable pinkhousegame-exe
   build-depends:
       base >=4.7 && <5
     , brick
+    , containers
     , lens
+    , linear
     , pinkhousegame
+    , vty
   default-language: Haskell2010
 
 test-suite pinkhousegame-test
@@ -64,6 +70,9 @@ test-suite pinkhousegame-test
   build-depends:
       base >=4.7 && <5
     , brick
+    , containers
     , lens
+    , linear
     , pinkhousegame
+    , vty
   default-language: Haskell2010
