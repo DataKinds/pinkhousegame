@@ -1,10 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE GADTs #-}
 
 
 module Game where
+
+import Types
 
 import qualified Linear as L
 import Linear.V2
@@ -13,7 +14,6 @@ import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map 
 import Data.List
 
-import Numeric.Natural
 import qualified Control.Lens as Lens
 import Control.Lens ( makeLenses, (^.), (.~), (&) )
 import qualified Brick as B
@@ -22,17 +22,6 @@ import qualified Brick.Widgets.Border as BWB
 import qualified Graphics.Vty as V
 import Brick.Widgets.Core ( (<=>), (<+>) )
 
-data HP = HP Integer Integer
-type Z2 = V2 Integer
-type N2 = V2 Natural 
-
-class ToVTY a where
-    toVTY :: a -> V.Image
-
-class (ToVTY a) => Entity a where
-    pos :: a -> Z2
-    hp  :: a -> HP
-data AnyEntity = forall a. (Entity a, ToVTY a) => AnyEntity a 
 instance ToVTY AnyEntity where
     toVTY (AnyEntity a) = toVTY a
 instance Entity AnyEntity where
@@ -42,23 +31,12 @@ instance Entity AnyEntity where
 instance ToVTY HP where
     toVTY (HP cur max) = V.string V.defAttr $ "HP" ++ show cur ++ "/" ++ show max
 
-data Mob = Mob {
-    _pos_Mob :: Z2,
-    _hp_Mob  :: HP,
-    _ascii_Mob :: Char
-}
-$(makeLenses ''Mob)
 instance Entity Mob where
     pos = _pos_Mob
     hp = _hp_Mob
 instance ToVTY Mob where
     toVTY mob = V.char V.defAttr $ mob^.ascii_Mob
 
-data Room = Room {
-    _size_Room :: N2,
-    _entities_Room :: [AnyEntity]
-}
-$(makeLenses ''Room)
 instance ToVTY Room where
     toVTY room = V.vertCat [V.horizCat [imAt (V2 x y) coordMap | x <- [0,1..fromIntegral(room^.size_Room._x)]] | y <- [0,1..fromIntegral(room^.size_Room._y)]]
         where
@@ -69,12 +47,6 @@ instance ToVTY Room where
                 (room^.entities_Room)
             imAt :: Z2 -> Map Z2 V.Image -> V.Image
             imAt z@(V2 x y) = Map.findWithDefault (V.char V.defAttr ' ') z
-
-data Game = Game {
-    _player :: Mob,
-    _room :: Room
-}
-$(makeLenses ''Game)
 
 initialGame :: Game
 initialGame = Game {

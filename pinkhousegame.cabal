@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8b124e6121b009e0163119451daed69f040331974a1208bda5b512254b464294
+-- hash: 78fb43cf409647db9876f8ef2181addd4810775c3ba559068dd3ac3b425170d0
 
 name:           pinkhousegame
 version:        0.1.0.0
@@ -29,6 +29,7 @@ library
   exposed-modules:
       Game
       Lib
+      Types
   other-modules:
       Paths_pinkhousegame
   hs-source-dirs:

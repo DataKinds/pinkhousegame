@@ -3,6 +3,7 @@ module Main where
 import qualified Linear as L
 import Linear.V2
 
+import Types
 import qualified Game as G
 import qualified Brick as B
 import qualified Graphics.Vty as V
