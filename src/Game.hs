@@ -16,11 +16,12 @@ import Data.List
 
 import qualified Control.Lens as Lens
 import Control.Lens ( makeLenses, (^.), (.~), (&) )
+
 import qualified Brick as B
 import qualified Brick.Widgets.Border.Style as BWBS
 import qualified Brick.Widgets.Border as BWB
-import qualified Graphics.Vty as V
 import Brick.Widgets.Core ( (<=>), (<+>) )
+import qualified Graphics.Vty as V
 
 instance ToVTY AnyEntity where
     toVTY (AnyEntity a) = toVTY a
@@ -30,6 +31,10 @@ instance Entity AnyEntity where
 
 instance ToVTY HP where
     toVTY (HP cur max) = V.string V.defAttr $ "HP" ++ show cur ++ "/" ++ show max
+instance ToVTY Money where
+    toVTY (Money m) = V.string V.defAttr $ "$" ++ show m
+instance ToVTY XP where
+    toVTY (XP cur max lvl) = V.string V.defAttr $ "XP" ++ show cur ++ "/" ++ show max ++ " LVL" ++ show lvl 
 
 instance Entity Mob where
     pos = _pos_Mob
@@ -53,6 +58,8 @@ initialGame = Game {
     _player = Mob {
         _pos_Mob = V2 0 0,
         _hp_Mob = HP 10 10,
+        _money_Mob = Money 150,
+        _xp_Mob = XP 0 1000 1,
         _ascii_Mob = '@'
     },
     _room = Room {
@@ -74,7 +81,13 @@ renderMapPanel g offset = B.Widget B.Greedy B.Greedy $ do
 
 renderStatsPanel :: Game
                  -> B.Widget String
-renderStatsPanel g = B.padLeftRight 2 . B.padBottom B.Max . B.raw . toVTY $ g^.player.hp_Mob
+renderStatsPanel g = B.padLeftRight 2 . B.padBottom B.Max . B.vBox $ [hpLine, moneyLine, xpLine]
+    where
+        imgToWidget :: ToVTY a => a -> B.Widget String
+        imgToWidget = B.raw . toVTY
+        hpLine = imgToWidget $ g^.player.hp_Mob
+        moneyLine = imgToWidget $ g^.player.money_Mob
+        xpLine = imgToWidget $ g^.player.xp_Mob
 
 renderLogPanel :: Game -> B.Widget String
 renderLogPanel g = B.padRight B.Max . B.padAll 1 $ B.str "WriterT [V.Image] (B.EventM String (B.Next G.Game)) ()"
