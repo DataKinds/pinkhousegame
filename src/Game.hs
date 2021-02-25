@@ -15,7 +15,8 @@ import qualified Data.Map.Strict as Map
 import Data.List
 
 import qualified Control.Lens as Lens
-import Control.Lens ( makeLenses, (^.), (.~), (&) )
+import Control.Lens ( makeLenses, (^.), (.~), (&), (-~) )
+import Control.Monad.Trans.State.Lazy
 
 import qualified Brick as B
 import qualified Brick.Widgets.Border.Style as BWBS
@@ -23,25 +24,18 @@ import qualified Brick.Widgets.Border as BWB
 import Brick.Widgets.Core ( (<=>), (<+>) )
 import qualified Graphics.Vty as V
 
+    
+
 instance ToVTY AnyEntity where
     toVTY (AnyEntity a) = toVTY a
-instance Entity AnyEntity where
-    pos (AnyEntity a) = pos a
-    hp (AnyEntity a) = hp a
-
 instance ToVTY HP where
     toVTY (HP cur max) = V.string V.defAttr $ "HP" ++ show cur ++ "/" ++ show max
 instance ToVTY Money where
     toVTY (Money m) = V.string V.defAttr $ "$" ++ show m
 instance ToVTY XP where
     toVTY (XP cur max lvl) = V.string V.defAttr $ "XP" ++ show cur ++ "/" ++ show max ++ " LVL" ++ show lvl 
-
-instance Entity Mob where
-    pos = _pos_Mob
-    hp = _hp_Mob
 instance ToVTY Mob where
     toVTY mob = V.char V.defAttr $ mob^.ascii_Mob
-
 instance ToVTY Room where
     toVTY room = V.vertCat [V.horizCat [imAt (V2 x y) coordMap | x <- [0,1..fromIntegral(room^.size_Room._x)]] | y <- [0,1..fromIntegral(room^.size_Room._y)]]
         where
@@ -52,6 +46,26 @@ instance ToVTY Room where
                 (room^.entities_Room)
             imAt :: Z2 -> Map Z2 V.Image -> V.Image
             imAt z@(V2 x y) = Map.findWithDefault (V.char V.defAttr ' ') z
+instance ToVTY Wall where
+    toVTY wall = V.char V.defAttr '#'
+
+instance Entity AnyEntity where
+    pos (AnyEntity a) = pos a
+    hp (AnyEntity a) = hp a
+instance Entity Mob where
+    pos = _pos_Mob
+    hp = _hp_Mob
+instance Entity Wall where
+    pos = _pos_Wall
+    hp = const (HP 10 10)
+
+
+entityWalk :: Direction -> _ -> State Game Bool
+entityWalk dir lensish = do
+    game <- get
+    put $ case dir of
+        N_Dir -> game & lensish.L._y -~ 1
+    return True
 
 initialGame :: Game
 initialGame = Game {
@@ -63,7 +77,7 @@ initialGame = Game {
         _ascii_Mob = '@'
     },
     _room = Room {
-        _size_Room = V2 50 50,
+        _size_Room = V2 100 25,
         _entities_Room = []
     }
 }

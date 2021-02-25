@@ -50,11 +50,19 @@ data Item = Item {
 }
 $(makeLenses ''Item)
 
+data Wall = Wall {
+    _pos_Wall :: Z2
+}
+$(makeLenses ''Wall)
+
 data Room = Room {
     _size_Room :: N2,
     _entities_Room :: [AnyEntity]
 }
 $(makeLenses ''Room)
+
+data Direction = N_Dir | NE_Dir | E_Dir | SE_Dir | S_Dir | SW_Dir | W_Dir | NW_Dir 
+
 
 data Game = Game {
     _player :: Mob,
